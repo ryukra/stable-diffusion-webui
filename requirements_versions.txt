@@ -8,3 +8,5 @@ torch
 transformers==4.19.2
 omegaconf==2.1.1
 pytorch_lightning==1.7.2
+Flask==2.2.2
+flask-ngrok==0.0.25
