@@ -4,3 +4,5 @@ GFPGANv1.3.pth
 model.ckpt
 tmp/stderr.txt
 tmp/stdout.txt
+repositories/stable-diffusion
+repositories/taming-transformers
