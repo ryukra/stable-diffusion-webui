@@ -10,6 +10,7 @@ torch
 transformers
 omegaconf
 pytorch_lightning
+Flask
 diffusers
 invisible-watermark
 scikit-image>=0.19
