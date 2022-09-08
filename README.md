@@ -57,7 +57,6 @@ can obtain it from the following places:# Stable Diffusion API
 A headless server with REST API for Stable Diffusion and for Krita Plugin (Beta 3 and above).
 Thanks to @ryukra for providing new server code. 
 
-![]
 
 ## Installing and running
 
