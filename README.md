@@ -49,6 +49,21 @@ You need [python](https://www.python.org/downloads/windows/) and [git](https://g
 installed to run this, and an NVidia video card.
 
 You need `model.ckpt`, Stable Diffusion model checkpoint, a big file containing the neural network weights. You
+can obtain it from the following places:# Stable Diffusion API
+A headless server with REST API for Stable Diffusion and for Krita Plugin (Beta 3 and above).
+Thanks to @ryukra for providing new server code. 
+
+![](screenshot.png)
+
+## Installing and running
+
+You need [python](https://www.python.org/downloads/windows/) and [git](https://git-scm.com/download/win)
+installed to run this, and an NVidia videocard.
+
+I tested the installation to work Windows with Python 3.8.10, and with Python 3.10.6. You may be able
+to have success with different versions.
+
+You need `model.ckpt`, Stable Diffusion model checkpoint, a big file containing the neural network weights. You
 can obtain it from the following places:
  - [official download](https://huggingface.co/CompVis/stable-diffusion-v-1-4-original)
  - [file storage](https://drive.yerf.org/wl/?id=EBfTrmcCCUAGaQBXVIj5lJmEhjoP1tgl)
