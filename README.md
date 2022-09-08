@@ -1,37 +1,8 @@
-# Stable Diffusion web UI
-A browser interface based on Gradio library for Stable Diffusion.
-
-Original script with Gradio UI was written by a kind anonymous user. This is a modification.
+# Stable Diffusion API
+A headless server with REST API for Stable Diffusion and for Krita Plugin (Beta 3 and above).
+Thanks to @ryukra for providing new server code. 
 
 ![](screenshot.png)
-
-## Feature showcase
-
-[<font size="12">Detailed feature showcase with images, art by Greg Rutkowski</font>](https://github.com/AUTOMATIC1111/stable-diffusion-webui-feature-showcase)
-
-- Original txt2img and img2img modes
-- One click install and run script (but you still must install python, git and CUDA)
-- Outpainting
-- Inpainting
-- Prompt matrix
-- Stable Diffusion upscale
-- Attention
-- Loopback
-- X/Y plot
-- Textual Inversion
-- Resizing options
-- Sampling method selection
-- Interrupt processing at any time
-- 4GB videocard support
-- Option to use GFPGAN
-- Correct seeds for batches
-- Prompt length validation
-- Generation parameters added as text to PNG
-- Tab to view an existing picture's generation parameters
-- Settings page
-- Running custom code from UI
-- Mouseover hints fo most UI elements
-- Possible to change defaults/mix/max/step values for UI elements via text config
 
 ## Installing and running
 
@@ -51,25 +22,25 @@ You optionally can use GPFGAN to improve faces, then you'll need to download the
 
 ### Automatic installation/launch
 
-- install [Python 3.10.6](https://www.python.org/downloads/windows/)
+- install [Python 3.10.6](https://www.python.org/downloads/windows/)  Best would be to activate global path checkbox in first dialog.
 - install [git](https://git-scm.com/download/win)
 - install [CUDA 11.3](https://developer.nvidia.com/cuda-11.3.0-download-archive?target_os=Windows&target_arch=x86_64)
-- place `model.ckpt` into webui directory, next to `webui.bat`.
-- _*(optional)*_ place `GFPGANv1.3.pth` into webui directory, next to `webui.bat`.
+- place `model.ckpt` into webui directory, next to `api.bat`.
+- _*(optional)*_ place `GFPGANv1.3.pth` into webui directory, next to `api.bat`.
 - run `webui.bat` from Windows Explorer.
 
 #### Troublehooting:
 
 - According to reports, intallation currently does not work in a directory with spaces in filenames.
-- if your version of Python is not in PATH (or if another version is), edit `webui.bat`, change the line `set PYTHON=python` to say the full path to your python executable: `set PYTHON=B:\soft\Python310\python.exe`. You can do this for python, but not for git.
+- if your version of Python is not in PATH (or if another version is), edit `api.bat`, change the line `set PYTHON=python` to say the full path to your python executable: `set PYTHON=B:\soft\Python310\python.exe`. You can do this for python, but not for git.
 - if you get out of memory errors and your videocard has low amount of VRAM (4GB), edit `webui.bat`, change line 5 to from `set COMMANDLINE_ARGS=` to `set COMMANDLINE_ARGS=--medvram` (see below for other possible options)
 - installer creates python virtual environment, so none of installed modules will affect your system installation of python if you had one prior to installing this.
-- to prevent the creation of virtual environment and use your system python, edit `webui.bat` replacing `set VENV_DIR=venv` with `set VENV_DIR=`.
-- webui.bat installs requirements from files `requirements_versions.txt`, which lists versions for modules specifically compatible with Python 3.10.6. If you choose to install for a different version of python, editing `webui.bat` to have `set REQS_FILE=requirements.txt` instead of `set REQS_FILE=requirements_versions.txt` may help (but I still reccomend you to just use the recommended version of python).
+- to prevent the creation of virtual environment and use your system python, edit `api.bat` replacing `set VENV_DIR=venv` with `set VENV_DIR=`.
+- api.bat installs requirements from files `requirements_versions.txt`, which lists versions for modules specifically compatible with Python 3.10.6. If you choose to install for a different version of python, editing `api.bat` to have `set REQS_FILE=requirements.txt` instead of `set REQS_FILE=requirements_versions.txt` may help (but I still reccomend you to just use the recommended version of python).
 - if you feel you broke something and want to reinstall from scratch, delete directories: `venv`, `repositories`.
 
 ### Manual instructions
-Alternatively, if you don't want to run webui.bat, here are instructions for installing
+Alternatively, if you don't want to run api.bat, here are instructions for installing
 everything by hand:
 
 ```commandline
@@ -100,8 +71,8 @@ pip install git+https://github.com/TencentARC/GFPGAN.git
 :: go into stable diffusion's repo directory
 cd stable-diffusion
 
-:: clone web ui
-git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
+:: clone web ui (API version)
+git clone https://github.com/imperator-maximus/stable-diffusion-webui
 
 :: install requirements of web ui
 pip install -r stable-diffusion-webui/requirements.txt
@@ -121,25 +92,32 @@ dir stable-diffusion-webui\GFPGANv1.3.pth
 
 After that the installation is finished.
 
-Run the command to start web ui:
+Run the command to start api:
 
 ```
-python stable-diffusion-webui/webui.py
+python stable-diffusion-webui/api.py
 ```
 
 If you have a 4GB video card, run the command with either `--lowvram` or `--medvram` argument:
 
 ```
-python stable-diffusion-webui/webui.py --medvram
+python stable-diffusion-webui/api.py --medvram
 ```
 
 After a while, you will get a message like this:
 
 ```
-Running on local URL:  http://127.0.0.1:7860/
+Running on local URL:  http://127.0.0.1:5000/
 ```
 
-Open the URL in browser, and you are good to go.
+Put URL in Krita Plugin Config - that is all.
+
+
+```
+
+If there is an issue.
+You can test API with http://127.0.0.1:5000/api/test
+One image should be generated and in browser there will be many characters shown. That means it is correct.
 
 
 ### What options to use for low VRAM videocardsd?
