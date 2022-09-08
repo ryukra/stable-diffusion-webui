@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Stable Diffusion web UI
 A browser interface based on Gradio library for Stable Diffusion.
 
@@ -50,6 +51,9 @@ installed to run this, and an NVidia video card.
 
 You need `model.ckpt`, Stable Diffusion model checkpoint, a big file containing the neural network weights. You
 can obtain it from the following places:# Stable Diffusion API
+=======
+# Stable Diffusion API
+>>>>>>> f44e400 (update readme)
 A headless server with REST API for Stable Diffusion and for Krita Plugin (Beta 3 and above).
 Thanks to @ryukra for providing new server code. 
 
