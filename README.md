@@ -291,7 +291,7 @@ dir GFPGANv1.3.pth
 
 After that the installation is finished.
 
-Run the command to start web ui:
+Run the command to start api:
 
 ```
 python webui.py
@@ -306,7 +306,7 @@ python webui.py --medvram
 After a while, you will get a message like this:
 
 ```
-Running on local URL:  http://127.0.0.1:7860/
+Running on local URL:  http://127.0.0.1:5000/
 ```
 
 Open the URL in a browser, and you are good to go.
