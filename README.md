@@ -2,7 +2,10 @@
 A headless server with REST API for Stable Diffusion and for Krita Plugin (Beta 3 and above).
 Thanks to @ryukra for providing new server code. 
 
+<<<<<<< HEAD
 ![](screenshot.png)
+=======
+>>>>>>> 5cf6f45d11b72cd189138968d8fce0a28b7c5dec
 
 ## Installing and running
 
@@ -131,4 +134,5 @@ also but the effect will likely be barely noticeable.
 Extra: if you get a green screen instead of generated pictures, you have a card that doesn't support half
 precision floating point numbers. You must use `--precision full --no-half` in addition to other flags,
 and the model will take much more space in VRAM.
+
 
