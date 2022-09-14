@@ -33,7 +33,8 @@ import json
 from io import BytesIO
 import base64
 from modules.sd_samplers import samplers, samplers_for_img2img,samplers_k_diffusion
-
+import gdiffusion
+import PIL
 
 shared.sd_upscalers = {
     "RealESRGAN": lambda img: realesrgan.upscale_with_realesrgan(img, 2, 0),
@@ -165,6 +166,12 @@ def sigint_handler(sig, frame):
 signal.signal(signal.SIGINT, sigint_handler)
 
 app = Flask(__name__)
+
+@app.route("/api/version")
+def processVersion():
+    data={'version':1.0} 
+    return jsonify(data)
+
 @app.route("/api/test")
 def processTest():
     data={'prompt': 'test', 'mode': 'txt2img', 'initimage': {'image': '', 'mask': ''}, 'steps': 30, 'sampler': 'LMS', 'mask_blur': 4, 'inpainting_fill': 'latent noise', 'use_gfpgan': False, 'batch_count': 1, 'cfg_scale': 5.0, 'denoising_strength': 1.0, 'seed': -1, 'height': 512, 'width': 512, 'resize_mode': 0, 'upscaler': 'RealESRGAN', 'upscale_overlap': 64, 'inpaint_full_res': True, 'inpainting_mask_invert': 0} 
@@ -224,8 +231,29 @@ def processAPI():
 
         buffer = BytesIO(base64.b64decode(data['initimage']['image']))
         initimg = Image.open(buffer)
-        buffer = BytesIO(base64.b64decode(data['initimage']['mask']))
-        initmask = Image.open(buffer)
+#        buffer = BytesIO(base64.b64decode(data['initimage']['mask']))
+#        initmask = Image.open(buffer)
+        fill_mode=int(data['inpainting_fill'])
+
+        # experimental: if mode is g-diffusion switch to orginal and use g-diffusion image as init image
+        # image as init_image
+        if (fill_mode==4):
+            if (512, 512) != initimg.size and fill_mode==4: # default size is native img size
+                print("Inpainting: Resizing input img to 512x512 ")    
+                initimg = initimg.resize((512, 512), resample=PIL.Image.LANCZOS)
+            init_image, initmask=gdiffusion.get_init_image(initimg,0.99,1, 0)
+            fill_mode=1 # original
+            initimg=init_image            
+        else:
+            initmask=gdiffusion.getAlphaAsImage(initimg)    # mask is now generated on server
+        if (not initmask):
+            if (gdiffusion.maskError==1):
+                print("inpainting: No transparent pixels found - throwing error")
+                return jsonify({'error':1,'text':"No transparent pixels found in image"})
+            else:
+                print("inpainting: No  pixels found - throwing error")
+                return jsonify({'error':2,'text':"No pixels found in image"})                
+
         switch_mode = 1
         oimages, oinfo, ohtml = img2img(data['prompt'],\
                                 initimg,\
@@ -233,7 +261,7 @@ def processAPI():
                                 data['steps'],\
                                 smp_index,\
                                 data['mask_blur'],\
-                                data['inpainting_fill'],\
+                                fill_mode,\
                                 data['use_gfpgan'],\
                                 switch_mode, \
                                 data['batch_count'], \
