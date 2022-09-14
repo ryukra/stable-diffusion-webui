@@ -196,7 +196,7 @@ def processAPI():
     oinfo = []
     smp_index=0
     for i in range(0,len(samplers_k_diffusion)):
-        if samplers_k_diffusion[i][0]=="LMS": smp_index=i    
+        if samplers_k_diffusion[i][0]==data['sampler']: smp_index=i    
     if data['mode'] == 'txt2img':
         oimages, oinfo, ohtml = txt2img(data['prompt'],'',data['steps'],smp_index,data['use_gfpgan'],data['batch_count'],1,data['cfg_scale'],data['seed'],data['height'],data['width'],0)
 
@@ -231,8 +231,9 @@ def processAPI():
 
         buffer = BytesIO(base64.b64decode(data['initimage']['image']))
         initimg = Image.open(buffer)
-#        buffer = BytesIO(base64.b64decode(data['initimage']['mask']))
-#        initmask = Image.open(buffer)
+       # buffer = BytesIO(base64.b64decode(data['initimage']['mask']))
+       # initmask = Image.open(buffer)
+       
         fill_mode=int(data['inpainting_fill'])
 
         # experimental: if mode is g-diffusion switch to orginal and use g-diffusion image as init image
