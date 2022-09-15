@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Stable Diffusion web UI
 A browser interface based on Gradio library for Stable Diffusion.
 
@@ -57,6 +58,12 @@ can obtain it from the following places:# Stable Diffusion API
 A headless server with REST API for Stable Diffusion and for Krita Plugin (Beta 3 and above).
 Thanks to @ryukra for providing new server code. 
 
+=======
+# Stable Diffusion API
+A headless server with REST API for Stable Diffusion and for Krita Plugin (Beta 3 and above).
+Thanks to @ryukra for providing new server code. 
+
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
 
 ## Installing and running
 
@@ -82,14 +89,24 @@ RealESRGAN into the directory with ESRGAN models. Thank you.
 
 ### Automatic installation/launch
 
+<<<<<<< HEAD
 - install [Python 3.10.6](https://www.python.org/downloads/windows/) and check "Add Python to PATH" during installation. You must install this exact version.
 - install [git](https://git-scm.com/download/win)
 - place `model.ckpt` into webui directory, next to `webui.bat`.
 - _*(optional)*_ place `GFPGANv1.3.pth` into webui directory, next to `webui.bat`.
 - run `webui-user.bat` from Windows Explorer. Run it as a normal user, ***not*** as administrator.
+=======
+- install [Python 3.10.6](https://www.python.org/downloads/windows/)  Best would be to activate global path checkbox in first dialog.
+- install [git](https://git-scm.com/download/win)
+- install [CUDA 11.3](https://developer.nvidia.com/cuda-11.3.0-download-archive?target_os=Windows&target_arch=x86_64)
+- place `model.ckpt` into webui directory, next to `api.bat`.
+- _*(optional)*_ place `GFPGANv1.3.pth` into webui directory, next to `api.bat`.
+- run `webui.bat` from Windows Explorer.
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
 
 ### Linux Automatic installation/launch
 
+<<<<<<< HEAD
 Prequisites:
 - For Debian-based:
 ```commandline
@@ -129,6 +146,14 @@ to enable appropriate optimization according to low VRAM guide below (for exampl
 - webui.bat installs requirements from files `requirements_versions.txt`, which lists versions for modules specifically compatible with
 Python 3.10.6. If you choose to install for a different version of python,  using custom parameter `set REQS_FILE=requirements.txt`
 may help (but I still recommend you to just use the recommended version of python).
+=======
+- According to reports, intallation currently does not work in a directory with spaces in filenames.
+- if your version of Python is not in PATH (or if another version is), edit `api.bat`, change the line `set PYTHON=python` to say the full path to your python executable: `set PYTHON=B:\soft\Python310\python.exe`. You can do this for python, but not for git.
+- if you get out of memory errors and your videocard has low amount of VRAM (4GB), edit `webui.bat`, change line 5 to from `set COMMANDLINE_ARGS=` to `set COMMANDLINE_ARGS=--medvram` (see below for other possible options)
+- installer creates python virtual environment, so none of installed modules will affect your system installation of python if you had one prior to installing this.
+- to prevent the creation of virtual environment and use your system python, edit `api.bat` replacing `set VENV_DIR=venv` with `set VENV_DIR=`.
+- api.bat installs requirements from files `requirements_versions.txt`, which lists versions for modules specifically compatible with Python 3.10.6. If you choose to install for a different version of python, editing `api.bat` to have `set REQS_FILE=requirements.txt` instead of `set REQS_FILE=requirements_versions.txt` may help (but I still reccomend you to just use the recommended version of python).
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
 - if you feel you broke something and want to reinstall from scratch, delete directories: `venv`, `repositories`.
 - if you get a green or black screen instead of generated pictures, you have a card that doesn't support half precision
 floating point numbers (Known issue with 16xx cards). You must use `--precision full --no-half` in addition to command line
@@ -140,6 +165,7 @@ you had one prior to installing this.
 and it will likely work, but if you want to seek help about things not working, I will not offer help unless you use this
 exact version for my sanity.
 
+<<<<<<< HEAD
 #### How to run with custom parameters
 
 It's possible to edit `set COMMANDLINE_ARGS=` line in `webui.bat` to run the program with different command line arguments, but that may lead
@@ -149,6 +175,11 @@ The recommended way is to use another .bat file named anything you like, set the
 A `webui-user.bat` file included into the repository does exactly this.
 
 Here is an example that runs the program with `--opt-split-attention` argument:
+=======
+### Manual instructions
+Alternatively, if you don't want to run api.bat, here are instructions for installing
+everything by hand:
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
 
 ```commandline
 @echo off
@@ -265,9 +296,30 @@ pip install torch --extra-index-url https://download.pytorch.org/whl/cu113
 # a different version, but this is what I tested.
 python -c "import torch; print(torch.cuda.is_available())"
 
+<<<<<<< HEAD
 # clone web ui and go into its directory
 git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
 cd stable-diffusion-webui
+=======
+:: clone Stable Diffusion repositories
+git clone https://github.com/CompVis/stable-diffusion.git
+git clone https://github.com/CompVis/taming-transformers
+
+:: install requirements of Stable Diffusion
+pip install transformers==4.19.2 diffusers invisible-watermark
+
+:: install k-diffusion
+pip install git+https://github.com/crowsonkb/k-diffusion.git
+
+:: (optional) install GFPGAN to fix faces
+pip install git+https://github.com/TencentARC/GFPGAN.git
+
+:: go into stable diffusion's repo directory
+cd stable-diffusion
+
+:: clone web ui (API version)
+git clone https://github.com/imperator-maximus/stable-diffusion-webui
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
 
 # clone repositories for Stable Diffusion and (optionally) CodeFormer
 mkdir repositories
@@ -312,13 +364,21 @@ After that the installation is finished.
 Run the command to start api:
 
 ```
+<<<<<<< HEAD
 python webui.py
+=======
+python stable-diffusion-webui/api.py
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
 ```
 
 If you have a 4GB video card, run the command with either `--lowvram` or `--medvram` argument:
 
 ```
+<<<<<<< HEAD
 python webui.py --medvram
+=======
+python stable-diffusion-webui/api.py --medvram
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
 ```
 
 After a while, you will get a message like this:
@@ -327,7 +387,18 @@ After a while, you will get a message like this:
 Running on local URL:  http://127.0.0.1:5000/
 ```
 
+<<<<<<< HEAD
 Open the URL in a browser, and you are good to go.
+=======
+Put URL in Krita Plugin Config - that is all.
+
+
+```
+
+If there is an issue.
+You can test API with http://127.0.0.1:5000/api/test
+One image should be generated and in browser there will be many characters shown. That means it is correct.
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
 
 
 ### Windows 11 WSL2 instructions

@@ -9,6 +9,7 @@ __pycache__
 /outputs
 /config.json
 /log
+<<<<<<< HEAD
 /webui.settings.bat
 /embeddings
 /styles.csv
@@ -16,3 +17,5 @@ __pycache__
 /webui-user.bat
 /webui-user.sh
 /interrogate
+=======
+>>>>>>> 2255d407d2bb6007abd06a173598a18e2ba182eb
