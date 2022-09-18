@@ -61,7 +61,7 @@ def getAlphaAsImage(init_image):
     mask_image = init_image.split()[-1]
     mask_image = PIL.ImageOps.invert(mask_image)
     extrema = mask_image.convert("L").getextrema()
-    print("extrema",extrema)
+#    print("extrema",extrema)
     if extrema == (0, 0):
         maskError=1
         mask_image = None  

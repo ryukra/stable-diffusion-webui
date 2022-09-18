@@ -170,7 +170,7 @@ def api():
 
     @app.route("/api/version")
     def processVersion():
-        data={'version':2.0} 
+        data={'version':2.01} 
         return jsonify(data)
 
     @app.route("/api/test")
@@ -232,8 +232,12 @@ def api():
 
             buffer = BytesIO(base64.b64decode(data['initimage']['image']))
             initimg = Image.open(buffer)
-        # buffer = BytesIO(base64.b64decode(data['initimage']['mask']))
-        # initmask = Image.open(buffer)
+            initmask=None
+            initmaskB64=data["initimage"].get("mask",None)
+            if  initmaskB64:
+                print("Mask included")
+                buffer = BytesIO(base64.b64decode(data['initimage']['mask']))
+                initmask = Image.open(buffer)
         
             fill_mode=int(data['inpainting_fill'])
 
@@ -247,7 +251,7 @@ def api():
                 fill_mode=1 # original
                 initimg=init_image            
             else:
-                initmask=gdiffusion.getAlphaAsImage(initimg)    # mask is now generated on server
+                if not initmask: initmask=gdiffusion.getAlphaAsImage(initimg)    # mask is now generated on server
             if (not initmask):
                 if (gdiffusion.maskError==1):
                     print("inpainting: No transparent pixels found - throwing error")
