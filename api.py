@@ -170,7 +170,7 @@ def api():
 
     @app.route("/api/version")
     def processVersion():
-        data={'version':2.01} 
+        data={'version':2.02} 
         return jsonify(data)
 
     @app.route("/api/test")
@@ -239,7 +239,7 @@ def api():
                 buffer = BytesIO(base64.b64decode(data['initimage']['mask']))
                 initmask = Image.open(buffer)
         
-            fill_mode=int(data['inpainting_fill'])
+            fill_mode=data.get('inpainting_fill',3)
 
             # experimental: if mode is g-diffusion switch to orginal and use g-diffusion image as init image
             # image as init_image
@@ -251,7 +251,10 @@ def api():
                 fill_mode=1 # original
                 initimg=init_image            
             else:
-                if not initmask: initmask=gdiffusion.getAlphaAsImage(initimg)    # mask is now generated on server
+                if not initmask:
+                    print("Generate mask from alpha")
+                    initmask=gdiffusion.getAlphaAsImage(initimg)    # mask is now generated on server
+
             if (not initmask):
                 if (gdiffusion.maskError==1):
                     print("inpainting: No transparent pixels found - throwing error")
@@ -261,11 +264,11 @@ def api():
                     return jsonify({'error':2,'text':"No pixels found in image"})                
 
             switch_mode = 1
-        
+            print("Fill:",fill_mode)
             oimages, oinfo, ohtml = img2img(data['prompt'],"","","",initimg, {'image':initimg, 'mask':initmask},
-                        "", 0, data.get("steps",15), 
+                        initmask, 1, data.get("steps",15), 
                         smp_index, data.get("mask_blur",4),              # mode and blur
-                        data.get('inpainting_fill',3), 
+                        fill_mode, 
                         data.get('restore_faces',False), data.get('tiling',False),
                         switch_mode,        # 0=img2img
                         data.get('batch_count',1),1,
