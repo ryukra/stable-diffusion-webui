@@ -1,7 +1,5 @@
 # Stable Diffusion API
-A headless server with REST API for Stable Diffusion and for Krita Plugin (Beta 3 and above).
-Thanks to @ryukra for providing new server code. 
-
+A headless server with REST API for Stable Diffusion and for Krita or Photoshop Plugins.
 
 ## Installing and running
 
@@ -106,17 +104,15 @@ python stable-diffusion-webui/api.py --medvram
 After a while, you will get a message like this:
 
 ```
-Running on local URL:  http://127.0.0.1:5000/
+Running on local URL:  http://127.0.0.1:7860/
 ```
 
-Put URL in Krita Plugin Config - that is all.
+Put URL in Krita or Photoshop Plugin Config - that is all. WebUI also runs on same URL in browser.
 
 
 ```
 
-If there is an issue.
-You can test API with http://127.0.0.1:5000/api/test
-One image should be generated and in browser there will be many characters shown. That means it is correct.
+If there is an issue - test URl in browser. You can  also see  API version at http://127.0.0.1:5000/api/version
 
 
 ### What options to use for low VRAM videocardsd?
