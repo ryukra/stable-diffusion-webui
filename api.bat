@@ -31,7 +31,7 @@ goto :launch
 :skip_venv
 
 :launch
-%PYTHON% launch_api.py
+%PYTHON% launch_api.py --share
 pause
 exit /b
 
