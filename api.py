@@ -170,7 +170,7 @@ def api():
 
             # only positional arguments allowed because of *args 
             oimages, oinfo, ohtml = txt2img(
-                data['prompt'],"", "","",data['steps'], smp_index,
+                data['prompt'],data['neg_prompt'], "","",data['steps'], smp_index,
                 data['restore_faces'], 
                 data['tiling'],
                 data['batch_count'],1,data['cfg_scale'],data['seed'],
@@ -188,7 +188,7 @@ def api():
             # only positional arguments allowed because of *args  (CSV)
             fill_mode=data['inpainting_fill']
 
-            oimages, oinfo, ohtml = img2img(switch_mode,data['prompt'],"","","",initimg, "",
+            oimages, oinfo, ohtml = img2img(switch_mode,data['prompt'],data['neg_prompt'],"","",initimg, "",
                         initimg,"", 0, data["steps"], 
                         smp_index, data["mask_blur"],              # mode and blur
                         fill_mode, 
@@ -254,7 +254,7 @@ def api():
 
 
 
-            oimages, oinfo, ohtml = img2img(switch_mode,data['prompt'],"","","",initimg, {'image':initimg, 'mask':initmask},
+            oimages, oinfo, ohtml = img2img(switch_mode,data['prompt'],data['neg_prompt'],"","",initimg, {'image':initimg, 'mask':initmask},
                         initimg,initmask, 1, data["steps"], 
                         smp_index, data["mask_blur"],              # mode and blur
                         fill_mode, 
