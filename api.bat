@@ -3,6 +3,8 @@
 if not defined PYTHON (set PYTHON=python)
 if not defined VENV_DIR (set VENV_DIR=venv)
 
+set ERROR_REPORTING=FALSE
+
 mkdir tmp 2>NUL
 
 %PYTHON% -c "" >tmp/stdout.txt 2>tmp/stderr.txt
@@ -31,7 +33,7 @@ goto :launch
 :skip_venv
 
 :launch
-%PYTHON% launch_api.py --share
+%PYTHON% launchapi.py --share
 pause
 exit /b
 
