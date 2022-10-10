@@ -7,7 +7,7 @@ import inspect
 import k_diffusion.sampling
 import ldm.models.diffusion.ddim
 import ldm.models.diffusion.plms
-from modules import prompt_parser
+from modules import prompt_parser, devices, processing
 
 from modules.shared import opts, cmd_opts, state
 import modules.shared as shared
@@ -83,7 +83,7 @@ def setup_img2img_steps(p, steps=None):
 
 
 def sample_to_image(samples):
-    x_sample = shared.sd_model.decode_first_stage(samples[0:1].type(shared.sd_model.dtype))[0]
+    x_sample = processing.decode_first_stage(shared.sd_model, samples[0:1])[0]
     x_sample = torch.clamp((x_sample + 1.0) / 2.0, min=0.0, max=1.0)
     x_sample = 255. * np.moveaxis(x_sample.cpu().numpy(), 0, 2)
     x_sample = x_sample.astype(np.uint8)
@@ -181,7 +181,7 @@ class VanillaStableDiffusionSampler:
 
         self.initialize(p)
 
-        # existing code fails with cetain step counts, like 9
+        # existing code fails with certain step counts, like 9
         try:
             self.sampler.make_schedule(ddim_num_steps=steps,  ddim_eta=self.eta, ddim_discretize=p.ddim_discretize, verbose=False)
         except Exception:
@@ -204,7 +204,7 @@ class VanillaStableDiffusionSampler:
 
         steps = steps or p.steps
 
-        # existing code fails with cetin step counts, like 9
+        # existing code fails with certain step counts, like 9
         try:
             samples_ddim, _ = self.sampler.sample(S=steps, conditioning=conditioning, batch_size=int(x.shape[0]), shape=x[0].shape, verbose=False, unconditional_guidance_scale=p.cfg_scale, unconditional_conditioning=unconditional_conditioning, x_T=x, eta=self.eta)
         except Exception:
