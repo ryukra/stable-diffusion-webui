@@ -5,6 +5,8 @@ import importlib
 import signal
 import threading
 
+from fastapi.middleware.gzip import GZipMiddleware
+
 from modules.paths import script_path
 
 from modules import devices, sd_samplers
@@ -28,7 +30,7 @@ from modules import devices
 from modules import modelloader
 from modules.paths import script_path
 from modules.shared import cmd_opts
-
+import modules.hypernetworks.hypernetwork
 from io import BytesIO
 from PIL import Image
 import json
@@ -104,6 +106,7 @@ def wrap_gradio_gpu_call(func, extra_outputs=None):
         shared.state.current_latent = None
         shared.state.current_image = None
         shared.state.current_image_sampling_step = 0
+        shared.state.skipped = False
         shared.state.interrupted = False
         shared.state.textinfo = None
 
@@ -124,6 +127,8 @@ modules.scripts.load_scripts(os.path.join(script_path, "scripts"))
 
 shared.sd_model = modules.sd_models.load_model()
 shared.opts.onchange("sd_model_checkpoint", wrap_queued_call(lambda: modules.sd_models.reload_model_weights(shared.sd_model)))
+
+shared.opts.onchange("sd_hypernetwork", wrap_queued_call(lambda: modules.hypernetworks.hypernetwork.load_hypernetwork(shared.opts.sd_hypernetwork)))
 
 
 def webui():
@@ -147,7 +152,7 @@ def webui():
             inbrowser=cmd_opts.autolaunch,
             prevent_thread_lock=True
         )
-
+        app.add_middleware(GZipMiddleware, minimum_size=1000)
         @app.get("/api/version")
         def processVersion():
             print("test")
