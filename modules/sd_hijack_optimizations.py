@@ -9,8 +9,6 @@ from ldm.util import default
 from einops import rearrange
 
 from modules import shared
-from modules.hypernetworks import hypernetwork
-
 
 if shared.cmd_opts.xformers or shared.cmd_opts.force_enable_xformers:
     try:
@@ -28,10 +26,16 @@ def split_cross_attention_forward_v1(self, x, context=None, mask=None):
     q_in = self.to_q(x)
     context = default(context, x)
 
-    context_k, context_v = hypernetwork.apply_hypernetwork(shared.loaded_hypernetwork, context)
-    k_in = self.to_k(context_k)
-    v_in = self.to_v(context_v)
-    del context, context_k, context_v, x
+    hypernetwork = shared.loaded_hypernetwork
+    hypernetwork_layers = (hypernetwork.layers if hypernetwork is not None else {}).get(context.shape[2], None)
+
+    if hypernetwork_layers is not None:
+        k_in = self.to_k(hypernetwork_layers[0](context))
+        v_in = self.to_v(hypernetwork_layers[1](context))
+    else:
+        k_in = self.to_k(context)
+        v_in = self.to_v(context)
+    del context, x
 
     q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> (b h) n d', h=h), (q_in, k_in, v_in))
     del q_in, k_in, v_in
@@ -55,16 +59,22 @@ def split_cross_attention_forward_v1(self, x, context=None, mask=None):
     return self.to_out(r2)
 
 
-# taken from https://github.com/Doggettx/stable-diffusion and modified
+# taken from https://github.com/Doggettx/stable-diffusion
 def split_cross_attention_forward(self, x, context=None, mask=None):
     h = self.heads
 
     q_in = self.to_q(x)
     context = default(context, x)
 
-    context_k, context_v = hypernetwork.apply_hypernetwork(shared.loaded_hypernetwork, context)
-    k_in = self.to_k(context_k)
-    v_in = self.to_v(context_v)
+    hypernetwork = shared.loaded_hypernetwork
+    hypernetwork_layers = (hypernetwork.layers if hypernetwork is not None else {}).get(context.shape[2], None)
+
+    if hypernetwork_layers is not None:
+        k_in = self.to_k(hypernetwork_layers[0](context))
+        v_in = self.to_v(hypernetwork_layers[1](context))
+    else:
+        k_in = self.to_k(context)
+        v_in = self.to_v(context)
 
     k_in *= self.scale
 
@@ -120,11 +130,14 @@ def xformers_attention_forward(self, x, context=None, mask=None):
     h = self.heads
     q_in = self.to_q(x)
     context = default(context, x)
-
-    context_k, context_v = hypernetwork.apply_hypernetwork(shared.loaded_hypernetwork, context)
-    k_in = self.to_k(context_k)
-    v_in = self.to_v(context_v)
-
+    hypernetwork = shared.loaded_hypernetwork
+    hypernetwork_layers = (hypernetwork.layers if hypernetwork is not None else {}).get(context.shape[2], None)
+    if hypernetwork_layers is not None:
+        k_in = self.to_k(hypernetwork_layers[0](context))
+        v_in = self.to_v(hypernetwork_layers[1](context))
+    else:
+        k_in = self.to_k(context)
+        v_in = self.to_v(context)
     q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> b n h d', h=h), (q_in, k_in, v_in))
     del q_in, k_in, v_in
     out = xformers.ops.memory_efficient_attention(q, k, v, attn_bias=None)
