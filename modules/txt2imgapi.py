@@ -30,8 +30,9 @@ def txt2img(*args,**kwargs):
         restore_faces=kwargs.get('restore_faces',False),
         tiling=kwargs.get('tiling',False),
         enable_hr=kwargs.get('enable_hr',False),
-        scale_latent=kwargs.get('scale_latent',False) if kwargs.get('enable_hr',False) else None,
-        denoising_strength=kwargs.get('denoising_strength', 0.7) if kwargs.get('enable_hr',False) else None,
+        firstphase_width=kwargs.get('firstphase_width',None),
+        firstphase_height=kwargs.get('firstphase_height',None),
+        denoising_strength=kwargs.get('denoising_strength', None),
     )
 
     if cmd_opts.enable_console_prompts:
