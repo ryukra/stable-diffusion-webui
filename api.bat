@@ -33,10 +33,10 @@ goto :launch
 :skip_venv
 
 :launch
-set COMMANDLINE_ARGS="--exit" 
+set COMMANDLINE_ARGS= --exit
 set REQS_FILE="requirements.txt" 
 %PYTHON% launch.py
-set COMMANDLINE_ARGS="--share" 
+set COMMANDLINE_ARGS=%USEARGS%
 set REQS_FILE="requirements.txt"  
 %PYTHON% launchapi.py 
 pause
