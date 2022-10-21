@@ -66,6 +66,7 @@ class apiInput(BaseModel):
     upscaler: str = ''
     upscale_overlap: int = 64
     inpaint_full_res: bool = True
+    inpaint_full_res_padding: int = 32
     inpainting_mask_invert: int = 0 # should be bool
     restore_faces: bool = False
     tiling: bool = False
@@ -205,10 +206,8 @@ def webui():
                             denoising_strength= data['denoising_strength'],
                             seed= data['seed'],
                             height= data['height'],
-                            width= data['width'], 
-                            inpaint_full_res= data["inpaint_full_res"],
-                            upscale_overlap=data["upscale_overlap"],
-                            inpainting_mask_invert= data["inpainting_mask_invert"])
+                            width= data['width'],
+                            upscale_overlap=data["upscale_overlap"])
             if data['mode'] == 'inpainting':
 
                 buffer = BytesIO(base64.b64decode(data['initimage']['image']))
@@ -235,8 +234,8 @@ def webui():
                             height= data['height'],
                             width= data['width'], 
                             inpaint_full_res= data["inpaint_full_res"],
-                            upscale_overlap=data["upscale_overlap"],
-                            inpainting_mask_invert= data["inpainting_mask_invert"])
+                            inpaint_full_res_padding= data["inpaint_full_res_padding"],
+                            upscale_overlap=data["upscale_overlap"])
 
 
             b64images = []
