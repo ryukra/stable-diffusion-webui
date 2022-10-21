@@ -304,7 +304,7 @@ def create_infotext(p, all_prompts, all_seeds, all_subseeds, comments, iteration
         "Size": f"{p.width}x{p.height}",
         "Model hash": getattr(p, 'sd_model_hash', None if not opts.add_model_hash_to_info or not shared.sd_model.sd_model_hash else shared.sd_model.sd_model_hash),
         "Model": (None if not opts.add_model_name_to_info or not shared.sd_model.sd_checkpoint_info.model_name else shared.sd_model.sd_checkpoint_info.model_name.replace(',', '').replace(':', '')),
-        "Hypernet": (None if shared.loaded_hypernetwork is None else shared.loaded_hypernetwork.filename.split('\\')[-1].split('.')[0]),
+        "Hypernet": (None if shared.loaded_hypernetwork is None else os.path.splitext(os.path.basename(shared.loaded_hypernetwork.filename))[0]),
         "Batch size": (None if p.batch_size < 2 else p.batch_size),
         "Batch pos": (None if p.batch_size < 2 else position_in_batch),
         "Variation seed": (None if p.subseed_strength == 0 else all_subseeds[index]),
@@ -540,11 +540,13 @@ class StableDiffusionProcessingTxt2Img(StableDiffusionProcessing):
             self.truncate_x = int(self.firstphase_width - firstphase_width_truncated) // opt_f
             self.truncate_y = int(self.firstphase_height - firstphase_height_truncated) // opt_f
 
-
-    def create_dummy_mask(self, x):
+    def create_dummy_mask(self, x, width=None, height=None):
         if self.sampler.conditioning_key in {'hybrid', 'concat'}:
+            height = height or self.height
+            width = width or self.width
+
             # The "masked-image" in this case will just be all zeros since the entire image is masked.
-            image_conditioning = torch.zeros(x.shape[0], 3, self.height, self.width, device=x.device)
+            image_conditioning = torch.zeros(x.shape[0], 3, height, width, device=x.device)
             image_conditioning = self.sd_model.get_first_stage_encoding(self.sd_model.encode_first_stage(image_conditioning)) 
 
             # Add the fake full 1s mask to the first dimension.
@@ -554,7 +556,8 @@ class StableDiffusionProcessingTxt2Img(StableDiffusionProcessing):
         else:
             # Dummy zero conditioning if we're not using inpainting model.
             # Still takes up a bit of memory, but no encoder call.
-            image_conditioning = torch.zeros(x.shape[0], 5, x.shape[-2], x.shape[-1], dtype=x.dtype, device=x.device)
+            # Pretty sure we can just make this a 1x1 image since its not going to be used besides its batch size.
+            image_conditioning = torch.zeros(x.shape[0], 5, 1, 1, dtype=x.dtype, device=x.device)
 
         return image_conditioning
 
@@ -567,7 +570,7 @@ class StableDiffusionProcessingTxt2Img(StableDiffusionProcessing):
             return samples
 
         x = create_random_tensors([opt_C, self.firstphase_height // opt_f, self.firstphase_width // opt_f], seeds=seeds, subseeds=subseeds, subseed_strength=self.subseed_strength, seed_resize_from_h=self.seed_resize_from_h, seed_resize_from_w=self.seed_resize_from_w, p=self)
-        samples = self.sampler.sample(self, x, conditioning, unconditional_conditioning, image_conditioning=self.create_dummy_mask(x))
+        samples = self.sampler.sample(self, x, conditioning, unconditional_conditioning, image_conditioning=self.create_dummy_mask(x, self.firstphase_width, self.firstphase_height))
 
         samples = samples[:, :, self.truncate_y//2:samples.shape[2]-self.truncate_y//2, self.truncate_x//2:samples.shape[3]-self.truncate_x//2]
 
@@ -630,6 +633,7 @@ class StableDiffusionProcessingImg2Img(StableDiffusionProcessing):
         self.inpainting_mask_invert = inpainting_mask_invert
         self.mask = None
         self.nmask = None
+        self.image_conditioning = None
 
     def init(self, all_prompts, all_seeds, all_subseeds):
         self.sampler = sd_samplers.create_sampler_with_index(sd_samplers.samplers_for_img2img, self.sampler_index, self.sd_model)
@@ -731,9 +735,7 @@ class StableDiffusionProcessingImg2Img(StableDiffusionProcessing):
             elif self.inpainting_fill == 3:
                 self.init_latent = self.init_latent * self.mask
 
-        conditioning_key = self.sampler.conditioning_key
-
-        if conditioning_key in {'hybrid', 'concat'}:
+        if self.sampler.conditioning_key in {'hybrid', 'concat'}:
             if self.image_mask is not None:
                 conditioning_mask = np.array(self.image_mask.convert("L"))
                 conditioning_mask = conditioning_mask.astype(np.float32) / 255.0
@@ -756,8 +758,8 @@ class StableDiffusionProcessingImg2Img(StableDiffusionProcessing):
             self.image_conditioning = self.image_conditioning.to(shared.device).type(self.sd_model.dtype)
         else:
             self.image_conditioning = torch.zeros(
-                self.init_latent.shape[0], 5, self.init_latent.shape[-2], self.init_latent.shape[-1], 
-                dtype=self.init_latent.dtype, 
+                self.init_latent.shape[0], 5, 1, 1,
+                dtype=self.init_latent.dtype,
                 device=self.init_latent.device
             )
 
