@@ -107,7 +107,7 @@ def img2img(init_img, init_img_with_mask, init_img_inpaint, init_mask_inpaint, m
         inpainting_fill=kwargs.get('inpainting_fill',1),
         resize_mode=kwargs.get('resize_mode',0),
         denoising_strength=kwargs.get('denoising_strength', 0.7),
-        inpaint_full_res=kwargs.get('inpaint_full_res',False),
+        inpaint_full_res=kwargs.get('inpaint_full_res',True),
         inpaint_full_res_padding=kwargs.get('inpaint_full_res_padding',32),
         inpainting_mask_invert=kwargs.get('inpainting_mask_invert',False)
     )

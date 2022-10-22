@@ -62,7 +62,7 @@ class apiInput(BaseModel):
     seed: int = -1
     height: int = 512
     width: int = 512
-    resize_mode: int = 0 # not sure what this one is
+    resize_mode: int = 0
     upscaler: str = ''
     upscale_overlap: int = 64
     inpaint_full_res: bool = True
@@ -124,13 +124,12 @@ def wrap_gradio_gpu_call(func, extra_outputs=None):
     return modules.ui.wrap_gradio_call(f, extra_outputs=extra_outputs)
 
 
-modules.scripts.load_scripts(os.path.join(script_path, "scripts"))
+modules.scripts.load_scripts()
 
 shared.sd_model = modules.sd_models.load_model()
 shared.opts.onchange("sd_model_checkpoint", wrap_queued_call(lambda: modules.sd_models.reload_model_weights(shared.sd_model)))
-
 shared.opts.onchange("sd_hypernetwork", wrap_queued_call(lambda: modules.hypernetworks.hypernetwork.load_hypernetwork(shared.opts.sd_hypernetwork)))
-
+shared.opts.onchange("sd_hypernetwork_strength", modules.hypernetworks.hypernetwork.apply_strength)
 
 def webui():
     # make the program just exit at ctrl+c without waiting for anything
